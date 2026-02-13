@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sibersih Laundry | Management System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="login-screen">
+        <div class="login-container">
+            <div class="info-side">
+                <a href="tentanglaundry.html" class="brand-link">
+                    <div class="bubble-icon">🫧</div>
+                    <h1>Sibersih Laundry</h1>
+                </a>
+                <h5>Klik logo di atas untuk profil kami</h5>
+                <h5>Layanan laundry premium terbaik di Cicurug. Bersih, dan Wangi.</h5>
+                <div class="contact-card">
+                    <br>
+                    <p>📍 Jl. Tanjo ayu Cibeber Girang</p>
+                    <p>📞 0812-9108-0258</p>
+                    <br>
+                </div>
+                <div class="online-section-glass">
+                    <h3 style="margin-bottom: 15px;">🚀 Siap Kirim Cucian?</h3>
+                    <p style="font-size: 14px; margin-bottom: 20px; opacity: 0.9;">Pesan layanan kami secara instan tanpa harus antre di lokasi.</p>
+                    <a href="beli.html" class="btn-order" style="display: block; text-align: center; text-decoration: none;">Ayo Cuci Sekarang Lewat Online</a>
+                </div>
+            </div>
+
+            <div class="glass-login-card">
+                <h2>Admin Login</h2>
+                <p class="admin-note">Halaman akses khusus pengelola sistem. Silakan masukkan kredensial Anda.</p>
+                
+                <div class="input-field"><input type="text" id="username" placeholder="Username"></div>
+                <div class="input-field"><input type="password" id="password" placeholder="Password"></div>
+                <button id="btnLogin" onclick="cekLogin()">Masuk ke Dashboard</button>
+                <p id="error-msg" class="error-text" style="display:none; color: #ff5252; margin-top: 10px;">Username atau sandi salah!</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="app-content" style="display: none;">
+        <div class="dashboard-wrapper">
+            <aside class="sidebar-glass">
+                <div class="sidebar-header">🫧 Sibersih</div>
+                <nav class="nav-menu">
+                    <button class="nav-btn active" onclick="showPage('input-page', this)">Pesanan Baru</button>
+                    <button class="nav-btn" onclick="showPage('online-page', this)">Pesanan Diterima</button>
+                    <button class="nav-btn" onclick="showPage('list-page', this)">Daftar Antrian</button>
+                    <button class="nav-btn" onclick="showPage('history-page', this)">Riwayat Selesai</button>
+                </nav>
+                <button class="logout-link" onclick="location.reload()">🚪 Keluar Sistem</button>
+            </aside>
+
+            <main class="main-panel">
+                <header class="main-header"><h2 id="page-title">Tambah Pesanan Baru</h2></header>
+                <div class="content-view">
+                    
+                    <section id="input-page" class="page-section">
+                        <div class="white-glass-card">
+                            <div class="row">
+                                <div class="col"><label>Nama Pelanggan</label><input type="text" id="nama" placeholder="Nama pelanggan..."></div>
+                                <div class="col"><label>No. Telepon</label><input type="text" id="manual-telp" placeholder="0812xxxx"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <label>Tipe Layanan</label>
+                                    <select id="tipe-cuci" onchange="toggleInputMode()">
+                                        <option value="kiloan">Kiloan</option>
+                                        <option value="satuan">Satuan</option>
+                                    </select>
+                                </div>
+                                <div class="col"><label>Jarak (KM)</label><input type="number" id="manual-jarak" oninput="hitungHarga()" placeholder="0"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col"><label>Alamat Lengkap</label><input type="text" id="manual-alamat" placeholder="Jl. Raya..."></div>
+                            </div>
+                            <div id="group-kiloan" class="col"><label>Berat (Kg)</label><input type="number" id="berat" oninput="hitungHarga()" placeholder="0"></div>
+                            <div id="group-satuan" class="col" style="display: none;">
+                                <label>Jenis Bahan</label>
+                                <select id="jenis-bahan" onchange="hitungHarga()">
+                                    <option value="20000">Jas</option>
+                                    <option value="25000">Gaun</option>
+                                    <option value="15000">Kebaya</option>
+                                    <option value="10000">Jaket Tebal</option>
+                                    <option value="15000">Bahan Sutra / Wol</option>
+                                </select>
+                            </div>
+                            <div class="price-tag">
+                                <small id="label-ongkir" style="display:block; margin-bottom:5px; font-weight:bold; color:var(--deep-blue);">Ongkir: Rp 0</small>
+                                <h1 id="displayHarga">Rp 0</h1>
+                            </div>
+                            <button class="btn-save" onclick="tambahPesanan()">Simpan ke Antrian</button>
+                        </div>
+                    </section>
+
+                    <section id="online-page" class="page-section" style="display: none;">
+                        <div class="white-glass-card">
+                            <table class="custom-table">
+                                <thead><tr><th>Nama</th><th>Detail (Jarak & Ongkir)</th><th>Aksi</th></tr></thead>
+                                <tbody id="daftarOnline"></tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <section id="list-page" class="page-section" style="display: none;">
+                        <div class="white-glass-card">
+                            <table class="custom-table">
+                                <thead><tr><th>Nama</th><th>Detail</th><th>Total</th><th>Status</th><th>Aksi</th></tr></thead>
+                                <tbody id="daftarPesanan"></tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <section id="history-page" class="page-section" style="display: none;">
+                        <div class="white-glass-card">
+                            <div style="display: flex; justify-content: flex-end; margin-bottom: 15px;">
+                                <button onclick="hapusSemuaRiwayat()" style="background: #ff5252; color: white; border: none; padding: 10px 15px; border-radius: 10px; cursor: pointer; font-size: 12px; font-weight: bold;">🗑️ Hapus Semua Riwayat</button>
+                            </div>
+                            <table class="custom-table">
+                                <thead><tr><th>Nama</th><th>Total</th><th>Aksi</th></tr></thead>
+                                <tbody id="daftarSelesai"></tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <div id="modal-detail" class="modal-overlay" style="display: none;">
+        <div class="white-glass-card modal-content" style="max-width: 450px; width: 90%;">
+            <h2 style="color: var(--deep-blue); margin-bottom: 20px; text-align: center;">📄 Detail Transaksi</h2>
+            <div id="isi-detail" style="text-align: left; line-height: 1.8;"></div> 
+            <button class="btn-save" style="margin-top: 20px; background: var(--deep-blue);" onclick="tutupModal()">Tutup</button>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+    <script>
+      // Konfigurasi Firebase Milik Anda
+      const firebaseConfig = {
+        apiKey: "AIzaSyDPjKjdJTsebylHDvRbHvs0JXS0YzYjFDA",
+        authDomain: "sibersih-a3b4b.firebaseapp.com",
+        databaseURL: "https://sibersih-a3b4b-default-rtdb.firebaseio.com",
+        projectId: "sibersih-a3b4b",
+        storageBucket: "sibersih-a3b4b.firebasestorage.app",
+        messagingSenderId: "1086101482247",
+        appId: "1:1086101482247:web:5256c591fabc8faf2f33a2",
+        measurementId: "G-1TC6SWP9KZ"
+      };
+
+      // Inisialisasi Firebase
+      firebase.initializeApp(firebaseConfig);
+      const database = firebase.database();
+
+      // Memantau pesanan yang masuk dari beli.html secara real-time
+      function sinkronkanPesananOnline() {
+        const onlineRef = database.ref('pesanan_online');
+        onlineRef.on('value', (snapshot) => {
+          const data = snapshot.val();
+          const tbody = document.getElementById('daftarOnline');
+          if(!tbody) return; 
+          
+          tbody.innerHTML = ''; 
+          
+          if(data) {
+            Object.keys(data).forEach(key => {
+              const p = data[key];
+              tbody.innerHTML += `
+                <tr>
+                  <td><strong>${p.nama}</strong></td>
+                  <td>
+                    📍 ${p.alamat}<br>
+                    📏 ${p.jarak} KM | 💰 Rp ${p.ongkir}
+                  </td>
+                  <td>
+                    <button onclick="terimaPesananOnline('${key}')" style="background:#2ecc71; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer;">Terima</button>
+                    <button onclick="tolakPesananOnline('${key}')" style="background:#e74c3c; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer;">Tolak</button>
+                  </td>
+                </tr>
+              `;
+            });
+          } else {
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; opacity:0.5;">Belum ada pesanan online baru</td></tr>';
+          }
+        });
+      }
+
+      window.terimaPesananOnline = function(id) {
+          if(confirm('Terima pesanan ini dan masukkan ke antrian?')) {
+              database.ref('pesanan_online/' + id).remove();
+              alert('Pesanan berhasil diterima!');
+          }
+      }
+
+      window.tolakPesananOnline = function(id) {
+          if(confirm('Hapus pesanan ini?')) {
+              database.ref('pesanan_online/' + id).remove();
+          }
+      }
+
+      // Aktifkan sinkronisasi otomatis
+      sinkronkanPesananOnline();
+    </script>
+
+    <script src="script.js"></script>
+</body>
+</html>
